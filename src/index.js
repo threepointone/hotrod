@@ -22,10 +22,7 @@ function shallowDiff(older, newer) {
 
 // this is for creating "real" elements in your target *OM
 function createElement(type, { children, ...props }) {
-  const el = document.createElement(type);
-  // should this be in finalizeInitialChildren?
-  Object.assign(el, props);
-  return el;
+  return document.createElement(type);
 }
 
 function getHostContextNode(instance: any) {
@@ -46,8 +43,8 @@ const ReconcilerConfig = {
     return document.createTextNode(text);
   },
 
-  // sitrep
-  finalizeInitialChildren(element, type, props) {
+  finalizeInitialChildren(element, type, { children, ...props }) {
+    Object.assign(element, props);
     return false;
   },
   // sitrep

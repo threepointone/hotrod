@@ -15,8 +15,18 @@ class App extends React.Component<{}, { ctr: number }> {
     );
   }
   render() {
-    return <div className="abc">hello world {this.state.ctr}</div>;
+    return (
+      <div className="abc" onclick={() => alert(123)} style="color:blue;">
+        hello world {this.state.ctr}
+        <span> and {this.state.ctr}</span>
+        <One ctr={this.state.ctr} />
+      </div>
+    );
   }
+}
+
+function One({ ctr }) {
+  return <div>maybe {ctr}</div>;
 }
 
 render(<App />, nullthrows(document.getElementById('app')));
