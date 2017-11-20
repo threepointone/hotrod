@@ -2,11 +2,6 @@
 import Reconciler from 'react-reconciler';
 import type { Node } from 'react';
 
-function log() {
-  console.log(this);
-  return this;
-}
-
 const emptyObject = {};
 
 function shallowDiff(older, newer) {
