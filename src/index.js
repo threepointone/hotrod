@@ -1,7 +1,6 @@
 // @flow
 import Reconciler from 'react-reconciler';
 import type { Node } from 'react';
-import { createMarkupForStyles } from './CSSPropertyOperations/index';
 
 function log() {
   console.log(this);
@@ -20,7 +19,7 @@ function shallowDiff(older, newer) {
   return ret;
 }
 
-function applyProps(element, { style, ...props }) {
+function applyProps(element, props) {
   Object.assign(element, props);
   // todo - style, events
 }
