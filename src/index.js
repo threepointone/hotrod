@@ -1,6 +1,7 @@
 // @flow
 import Reconciler from 'react-reconciler';
 import type { Node } from 'react';
+import { createMarkupForStyles } from './CSSPropertyOperations/index';
 
 function log() {
   console.log(this);
@@ -9,7 +10,6 @@ function log() {
 
 const emptyObject = {};
 
-//sitrep
 function shallowDiff(older, newer) {
   const ret = {};
   new Set(Object.keys(newer).concat(Object.keys(older))).forEach(key => {
@@ -18,6 +18,11 @@ function shallowDiff(older, newer) {
     }
   });
   return ret;
+}
+
+function applyProps(element, { style, ...props }) {
+  Object.assign(element, props);
+  // todo - style, events
 }
 
 // this is for creating "real" elements in your target *OM
@@ -30,7 +35,6 @@ function getHostContextNode(instance: any) {
 }
 
 const ReconcilerConfig = {
-  // sitrep
   appendInitialChild(parentInstance, child) {
     parentInstance.appendChild(child);
   },
@@ -38,16 +42,16 @@ const ReconcilerConfig = {
   createInstance(type, props, internalInstanceHandle) {
     return createElement(type, props);
   },
-  // sitrep
+
   createTextInstance(text, rootContainerInstance, internalInstanceHandle) {
     return document.createTextNode(text);
   },
 
   finalizeInitialChildren(element, type, { children, ...props }) {
-    Object.assign(element, props);
+    applyProps(element, props);
     return false;
   },
-  // sitrep
+
   getPublicInstance(inst) {
     return inst;
   },
@@ -61,29 +65,27 @@ const ReconcilerConfig = {
     return shallowDiff(oldProps, newProps);
   },
 
-  // sitrep
   prepareForCommit() {
     // noop
   },
-  // sitrep
+
   resetAfterCommit() {
     // noop
   },
 
-  // sitrep
   resetTextContent(element) {
     // noop
   },
-  // sitrep
+
   getRootHostContext(rootInstance) {
     return getHostContextNode(rootInstance);
   },
   // ????
-  // sitrep
+
   getChildHostContext() {
     return emptyObject;
   },
-  // sitrep
+
   shouldSetTextContent(type, props) {
     return (
       type === 'textarea' ||
@@ -104,40 +106,33 @@ const ReconcilerConfig = {
   useSyncScheduling: true,
 
   mutation: {
-    // sitrep
     appendChild(parentInstance, child) {
       parentInstance.appendChild(child);
     },
-    // sitrep
+
     appendChildToContainer(parentInstance, child) {
       parentInstance.appendChild(child);
     },
-    // sitrep
+
     removeChild(parentInstance, child) {
       parentInstance.removeChild(child);
     },
-    // sitrep
+
     removeChildFromContainer(parentInstance, child) {
       parentInstance.removeChild(child);
     },
-    // sitrep
+
     insertBefore(parentInstance, child, beforeChild) {
       parentInstance.insertBefore(child, beforeChild);
     },
-    commitUpdate(
-      instance,
-      updatePayload,
-      type,
-      { children: oldChildren, ...oldProps },
-      { children: newChildren, ...newProps },
-    ) {
-      Object.assign(instance, updatePayload);
+    commitUpdate(instance, updatePayload, type, oldProps, newProps) {
+      applyProps(instance, updatePayload);
     },
-    // sitrep
+
     commitMount(instance, updatePayload, type, oldProps, newProps) {
       // noop
     },
-    // sitrep
+
     commitTextUpdate(textInstance, oldText, newText) {
       textInstance.nodeValue = newText;
     },
@@ -146,19 +141,15 @@ const ReconcilerConfig = {
 
 const MyRenderer = Reconciler(ReconcilerConfig);
 
-export function render(
-  element: Node,
-  container: HTMLElement,
-  callback?: void => void,
-) {
+export function render(element: Node, container: HTMLElement) {
   const node = MyRenderer.createContainer(container);
   MyRenderer.updateContainer(element, node);
   // Call MyRenderer.updateContainer() to schedule changes on the roots.
 }
 
-// todo
-// updates / state
+// style
 // events
+// devtools
 // attrs vs props. what's the dealeo?
 // text stuff?
 // what is updateFiberProps?
